@@ -7,7 +7,7 @@ P3RGB64x32MatrixPanel *P3RGB64x32MatrixPanel::singleton;
 
 
 static EventQueue queue(1000 * EVENTS_EVENT_SIZE);
-static Thread eventThread(osPriorityISR, 100*1024);
+static Thread eventThread(osPriorityRealtime7, 100*1024);
 
 void P3RGB64x32MatrixPanel::test()
 {

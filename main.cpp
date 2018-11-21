@@ -42,24 +42,24 @@ int main() {
 }
 
 void draw_main() {
-//	weight_init();
-//	pc.printf("draw_main\n");
-//
-//	while (true) {
-//		osEvent evt = weight_mail_box.get();
-//		if (evt.status == osEventMail) {
-//			weight_mail_t *mail = (weight_mail_t *) evt.value.p;
-//			pc.printf("stable:%d\t weight:%f\n", mail->stable, mail->weight);
-//
-//			// fill the screen with 'black'
-////			matrix.fillScreen(matrix.color444(0, 0, 0));
-////			matrix.setTextCursor(0, 0);
-////			matrix.setTextColor(matrix.color444(15, 0, 0));
-////			matrix.printf("%1d %f3.1 kg\n",  mail->stable, mail->weight);
-//
-//			weight_mail_box.free(mail);
-//		}
-//	}
+	weight_init();
+	pc.printf("draw_main\n");
+
+	while (true) {
+		osEvent evt = weight_mail_box.get();
+		if (evt.status == osEventMail) {
+			weight_mail_t *mail = (weight_mail_t *) evt.value.p;
+			pc.printf("stable:%d\t weight:%f\n", mail->stable, mail->weight);
+
+			// fill the screen with 'black'
+//			matrix.fillScreen(matrix.color444(0, 0, 0));
+//			matrix.setTextCursor(0, 0);
+//			matrix.setTextColor(matrix.color444(15, 0, 0));
+//			matrix.printf("%1d %f3.1 kg\n",  mail->stable, mail->weight);
+
+			weight_mail_box.free(mail);
+		}
+	}
 	P3RGB64x32MatrixPanel matrix(D0, D3, D1, D2, D4, D5, D8, D6, P4_0, D14, D7,
 			D10, P4_1);
 	PS_PAD pad(P6_14, P6_15, P6_12, P3_9);
