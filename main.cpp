@@ -2,7 +2,15 @@
 
 #include "P3RGB64x32MatrixPanel.h"
 #include "PS_PAD.h"
+#include "Weight.h"
 #include "mbed.h"
+
+typedef struct {
+	uint8_t stable;
+	float weight;
+} weight_mail_t;
+
+Mail<weight_mail_t, 16> weight_mail_box;
 
 //P5_14 D0	R1
 //P5_8 	D3	G1
@@ -26,7 +34,6 @@ uint16_t Wheel(P3RGB64x32MatrixPanel &matrix, byte WheelPos);
 Thread T1(osPriorityNormal, 1500 * 1024);
 Serial pc(USBTX, USBRX);
 
-
 int main() {
 	T1.start(&draw_main);
 
@@ -35,12 +42,27 @@ int main() {
 }
 
 void draw_main() {
-	P3RGB64x32MatrixPanel matrix(D0, D3, D1, D2, D4, D5, D8, D6, P4_0, D14, D7, D10, P4_1);
-//	P3RGB64x32MatrixPanel matrix(D0, D3, D1, D2, D4, D5, D8, D6, P4_0, D14, D7, D15, P4_1);
+//	weight_init();
+//	pc.printf("draw_main\n");
+//
+//	while (true) {
+//		osEvent evt = weight_mail_box.get();
+//		if (evt.status == osEventMail) {
+//			weight_mail_t *mail = (weight_mail_t *) evt.value.p;
+//			pc.printf("stable:%d\t weight:%f\n", mail->stable, mail->weight);
+//
+//			// fill the screen with 'black'
+////			matrix.fillScreen(matrix.color444(0, 0, 0));
+////			matrix.setTextCursor(0, 0);
+////			matrix.setTextColor(matrix.color444(15, 0, 0));
+////			matrix.printf("%1d %f3.1 kg\n",  mail->stable, mail->weight);
+//
+//			weight_mail_box.free(mail);
+//		}
+//	}
+	P3RGB64x32MatrixPanel matrix(D0, D3, D1, D2, D4, D5, D8, D6, P4_0, D14, D7,
+			D10, P4_1);
 	PS_PAD pad(P6_14, P6_15, P6_12, P3_9);
-
-	pc.printf("draw_main\n");
-
 	pad.init();
 	matrix.begin();
 
@@ -177,3 +199,9 @@ uint16_t Wheel(P3RGB64x32MatrixPanel &matrix, byte WheelPos) {
 	}
 }
 
+void weight_result(uint8_t stable, float weight) {
+	weight_mail_t *mail = weight_mail_box.alloc();
+	mail->stable = stable;
+	mail->weight = weight;
+	weight_mail_box.put(mail);
+}
