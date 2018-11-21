@@ -5,7 +5,8 @@ static Serial pc(USBTX, USBRX);
 
 #define TIMEOUT_US 30000
 
-static InterruptIn p(P5_9);
+static InterruptIn p(D15);
+//static InterruptIn p(P5_9);
 static Timer t;
 static Timeout t2;
 static Timeout t3;

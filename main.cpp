@@ -11,11 +11,11 @@
 //P5_11 D4	G2
 //P5_10 D5 	B2
 //P3_10 D8	CLK
-//P2_1 	D6	D
+//P2_1	D6	D
 //P4_0  	OE
 //P1_7 	D14	A
 //P2_0	D7	B
-//P1_6 	D15	C
+//P6_13 D10	C
 //P4_1		LAT
 
 void draw_main();
@@ -35,7 +35,8 @@ int main() {
 }
 
 void draw_main() {
-	P3RGB64x32MatrixPanel matrix(D0, D3, D1, D2, D4, D5, D8, D6, P4_0, D14, D7, D15, P4_1);
+	P3RGB64x32MatrixPanel matrix(D0, D3, D1, D2, D4, D5, D8, D6, P4_0, D14, D7, D10, P4_1);
+//	P3RGB64x32MatrixPanel matrix(D0, D3, D1, D2, D4, D5, D8, D6, P4_0, D14, D7, D15, P4_1);
 	PS_PAD pad(P6_14, P6_15, P6_12, P3_9);
 
 	pc.printf("draw_main\n");
