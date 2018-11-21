@@ -10,7 +10,23 @@ typedef struct {
 	float weight;
 } weight_mail_t;
 
-Mail<weight_mail_t, 16> weight_mail_box;
+typedef struct {
+	int analog_rx;
+	int analog_ry;
+	int analog_lx;
+	int analog_ly;
+	int buttons;
+} pspad_mail_t;
+
+typedef struct{
+	uint8_t message_type;
+	union{
+		weight_mail_t weight;
+		pspad_mail_t pspad;
+	};
+} mail_t;
+
+Mail<mail_t, 32> mail_box;
 
 //P5_14 D0	R1
 //P5_8 	D3	G1
@@ -27,64 +43,101 @@ Mail<weight_mail_t, 16> weight_mail_box;
 //P4_1		LAT
 
 void draw_main();
-void setup(P3RGB64x32MatrixPanel &matrix);
-void loop();
+void pspad_main();
 uint16_t Wheel(P3RGB64x32MatrixPanel &matrix, byte WheelPos);
 
-Thread T1(osPriorityNormal, 1500 * 1024);
+Thread draw_main_task(osPriorityNormal, 500 * 1024);
+Thread pspad_main_task(osPriorityAboveNormal, 100 * 1024);
+
 Serial pc(USBTX, USBRX);
 
 int main() {
-	T1.start(&draw_main);
+	draw_main_task.start(&draw_main);
+	pspad_main_task.start(&pspad_main);
 
 	while (true);
 	return 0;
 }
 
+void pspad_main(){
+	pc.printf("pspad main start\n");
+	PS_PAD pad(P6_14, P6_15, P6_12, P3_9);
+	pad.init();
+	int analog_rx;
+	int analog_ry;
+	int analog_lx;
+	int analog_ly;
+	int buttons;
+
+	Thread::wait(1000);
+	while(true){
+		pad.poll();
+		analog_rx = pad.read(PS_PAD::ANALOG_RX);
+		analog_ry = pad.read(PS_PAD::ANALOG_RY);
+		analog_lx = pad.read(PS_PAD::ANALOG_LX);
+		analog_ly = pad.read(PS_PAD::ANALOG_LY);
+		buttons   = pad.read(PS_PAD::BUTTONS);
+
+		if(buttons){
+			pc.printf("%04x\n", buttons);
+			mail_t *mail = mail_box.alloc();
+			mail->message_type = 2;
+			mail->pspad.analog_rx = analog_rx;
+			mail->pspad.analog_ry = analog_ry;
+			mail->pspad.analog_lx = analog_lx;
+			mail->pspad.analog_ly = analog_ly;
+			mail->pspad.buttons = buttons;
+
+			mail_box.put(mail);
+		}
+		Thread::wait(50);
+	}
+}
+
 void draw_main() {
+	pc.printf("draw main start\n");
 	weight_init();
-	pc.printf("draw_main\n");
 	P3RGB64x32MatrixPanel matrix(D0, D3, D1, D2, D4, D5, D8, D6, P4_0, D14, D7,	D10, P4_1);
 	matrix.begin();
 
 	while (true) {
-		osEvent evt = weight_mail_box.get();
+		osEvent evt = mail_box.get();
+		pc.printf("evt:%d\n", evt);
 		if (evt.status == osEventMail) {
-			weight_mail_t *mail = (weight_mail_t *) evt.value.p;
-			pc.printf("stable:%d\t weight:%f\n", mail->stable, mail->weight);
+			mail_t *mail = (mail_t *) evt.value.p;
+			pc.printf("control type:%d", mail->message_type);
+			if(mail->message_type==1){
+				pc.printf("stable:%d\t weight:%f\n", mail->weight.stable, mail->weight.weight);
 
-			// fill the screen with 'black'
-			matrix.fillScreen(matrix.color444(0, 0, 0));
-			matrix.setTextCursor(0, 0);
-			matrix.setTextColor(matrix.color444(15, 0, 0));
-			matrix.printf("%1d\n%5.1f kg\n",  mail->stable, mail->weight);
+				// fill the screen with 'black'
+				matrix.fillScreen(matrix.color444(0, 0, 0));
+				matrix.setTextCursor(0, 0);
+				matrix.setTextColor(matrix.color444(15, 0, 0));
+				matrix.printf("%1d\n%5.1f kg\n",  mail->weight.stable, mail->weight.weight);
+			}else if(mail->message_type==2){
+				pc.printf("%4d\t%4d\t%4d\t%4d\t%04x\n", mail->pspad.analog_rx, mail->pspad.analog_ry, mail->pspad.analog_lx, mail->pspad.analog_ly, mail->pspad.buttons);
 
-			weight_mail_box.free(mail);
+				// fill the screen with 'black'
+				pc.printf("fill the screen with 'black'\n");
+				matrix.fillScreen(matrix.color444(0, 0, 0));
+
+				matrix.setTextCursor(0, 0);
+				matrix.setTextColor(matrix.color444(15, 0, 0));
+				matrix.printf("%4d %4d\n", mail->pspad.analog_rx, mail->pspad.analog_ry);
+				matrix.setTextColor(matrix.color444(0, 15, 0));
+				matrix.printf("%4d %4d\n", mail->pspad.analog_lx, mail->pspad.analog_ly);
+				matrix.setTextColor(matrix.color444(0, 0, 15));
+				matrix.printf("%04x", mail->pspad.buttons);
+			}
+			mail_box.free(mail);
 		}
-	}
-	PS_PAD pad(P6_14, P6_15, P6_12, P3_9);
-	pad.init();
-	pc.printf("setup\n");
-	while (true) {
-		pad.poll();
-		pc.printf("%4d\t%4d\t%4d\t%4d\t%04x\n", pad.read(PS_PAD::ANALOG_RX),pad.read(PS_PAD::ANALOG_RY),pad.read(PS_PAD::ANALOG_LX),pad.read(PS_PAD::ANALOG_LY),pad.read(PS_PAD::BUTTONS));
-
-		// fill the screen with 'black'
-		pc.printf("fill the screen with 'black'\n");
-		matrix.fillScreen(matrix.color444(0, 0, 0));
-
-		matrix.setTextCursor(0, 0);
-		matrix.setTextColor(matrix.color444(15, 0, 0));
-		matrix.printf("%4d %4d\n", pad.read(PS_PAD::ANALOG_RX),pad.read(PS_PAD::ANALOG_RY));
-		matrix.setTextColor(matrix.color444(0, 15, 0));
-		matrix.printf("%4d %4d\n", pad.read(PS_PAD::ANALOG_LX),pad.read(PS_PAD::ANALOG_LY));
-		matrix.setTextColor(matrix.color444(0, 0, 15));
-		matrix.printf("%04x", pad.read(PS_PAD::BUTTONS));
-
 	}
 }
 
 #if 0
+void setup(P3RGB64x32MatrixPanel &matrix);
+void loop();
+
 void setup(P3RGB64x32MatrixPanel &matrix) {
 
 	pad.init();
@@ -198,8 +251,9 @@ uint16_t Wheel(P3RGB64x32MatrixPanel &matrix, byte WheelPos) {
 }
 
 void weight_result(uint8_t stable, float weight) {
-	weight_mail_t *mail = weight_mail_box.alloc();
-	mail->stable = stable;
-	mail->weight = weight;
-	weight_mail_box.put(mail);
+	mail_t *mail = mail_box.alloc();
+	mail->message_type = 1;
+	mail->weight.stable = stable;
+	mail->weight.weight = weight;
+	mail_box.put(mail);
 }
