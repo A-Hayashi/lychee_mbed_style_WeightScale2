@@ -66,8 +66,8 @@ void P3RGB64x32MatrixPanel::begin() {
 	pinOE = HIGH;
 
 	eventThread.start(callback(&queue, &EventQueue::dispatch_forever));
-	timer.attach_us(queue.event(onTimer), 100);
-//	timer.attach_us(onTimer, 80);
+	timer.attach_us(queue.event(onTimer), 200);
+//	timer.attach(queue.event(onTimer), 3);
 }
 
 void P3RGB64x32MatrixPanel::stop() {

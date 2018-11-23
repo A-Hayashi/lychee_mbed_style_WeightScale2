@@ -79,7 +79,6 @@ void pspad_main(){
 		buttons   = pad.read(PS_PAD::BUTTONS);
 
 		if(buttons){
-			pc.printf("%04x\n", buttons);
 			mail_t *mail = mail_box.alloc();
 			mail->message_type = 2;
 			mail->pspad.analog_rx = analog_rx;
@@ -90,7 +89,7 @@ void pspad_main(){
 
 			mail_box.put(mail);
 		}
-		Thread::wait(50);
+		Thread::wait(100);
 	}
 }
 
@@ -102,151 +101,33 @@ void draw_main() {
 
 	while (true) {
 		osEvent evt = mail_box.get();
-		pc.printf("evt:%d\n", evt);
 		if (evt.status == osEventMail) {
 			mail_t *mail = (mail_t *) evt.value.p;
-			pc.printf("control type:%d", mail->message_type);
 			if(mail->message_type==1){
 				pc.printf("stable:%d\t weight:%f\n", mail->weight.stable, mail->weight.weight);
 
-				// fill the screen with 'black'
 				matrix.fillScreen(matrix.color444(0, 0, 0));
 				matrix.setTextCursor(0, 0);
+
 				matrix.setTextColor(matrix.color444(15, 0, 0));
 				matrix.printf("%1d\n%5.1f kg\n",  mail->weight.stable, mail->weight.weight);
 			}else if(mail->message_type==2){
 				pc.printf("%4d\t%4d\t%4d\t%4d\t%04x\n", mail->pspad.analog_rx, mail->pspad.analog_ry, mail->pspad.analog_lx, mail->pspad.analog_ly, mail->pspad.buttons);
 
-				// fill the screen with 'black'
-				pc.printf("fill the screen with 'black'\n");
 				matrix.fillScreen(matrix.color444(0, 0, 0));
-
 				matrix.setTextCursor(0, 0);
+
 				matrix.setTextColor(matrix.color444(15, 0, 0));
 				matrix.printf("%4d %4d\n", mail->pspad.analog_rx, mail->pspad.analog_ry);
+
 				matrix.setTextColor(matrix.color444(0, 15, 0));
 				matrix.printf("%4d %4d\n", mail->pspad.analog_lx, mail->pspad.analog_ly);
+
 				matrix.setTextColor(matrix.color444(0, 0, 15));
 				matrix.printf("%04x", mail->pspad.buttons);
 			}
 			mail_box.free(mail);
 		}
-	}
-}
-
-#if 0
-void setup(P3RGB64x32MatrixPanel &matrix);
-void loop();
-
-void setup(P3RGB64x32MatrixPanel &matrix) {
-
-	pad.init();
-	matrix.begin();
-
-	// draw a pixel in solid white
-	pc.printf("draw a pixel in solid white\n");
-	matrix.drawPixel(0, 0, matrix.color444(15, 15, 15));
-	wait_ms(5000);
-
-	// fix the screen with green
-	pc.printf("fix the screen with green\n");
-	matrix.fillRect(0, 0, matrix.width(), matrix.height(),
-			matrix.color444(0, 15, 0));
-	wait_ms(5000);
-
-	// draw a box in yellow
-	pc.printf("draw a box in yellow\n");
-	matrix.drawRect(0, 0, matrix.width(), matrix.height(),
-			matrix.color444(15, 15, 0));
-	wait_ms(5000);
-
-	// draw an 'X' in red
-	pc.printf("draw an 'X' in red\n");
-	matrix.drawLine(0, 0, matrix.width() - 1, matrix.height() - 1,
-			matrix.color444(15, 0, 0));
-	matrix.drawLine(matrix.width() - 1, 0, 0, matrix.height() - 1,
-			matrix.color444(15, 0, 0));
-	wait_ms(5000);
-
-	// draw a blue circle
-	pc.printf("draw a blue circle\n");
-	matrix.drawCircle(10, 10, 10, matrix.color444(0, 0, 15));
-	wait_ms(5000);
-
-	// fill a violet circle
-	pc.printf("fill a violet circle\n");
-	matrix.fillCircle(40, 21, 10, matrix.color444(15, 0, 15));
-	wait_ms(5000);
-
-	// fill the screen with 'black'
-	pc.printf("fill the screen with 'black'\n");
-	matrix.fillScreen(matrix.color444(0, 0, 0));
-
-	// draw some text!
-	pc.printf("draw some text!\n");
-	matrix.setTextSize(1);     // size 1 == 8 pixels high
-	matrix.setTextWrap(false); // Don't wrap at end of line - will do ourselves
-
-	matrix.setTextCursor(8, 0);    // start at top left, with 8 pixel of spacing
-	uint8_t w = 0;
-	char *str = "P3indoorSMDDisplay";
-	for (w = 0; w < 8; w++) {
-		matrix.setTextColor(Wheel(matrix, w));
-		matrix.writeChar(str[w]);
-	}
-	matrix.setTextCursor(2, 8);    // next line
-	for (w = 8; w < 18; w++) {
-		matrix.setTextColor(Wheel(matrix, w));
-		matrix.writeChar(str[w]);
-	}
-	matrix.writeChar('\n');
-
-	matrix.setTextColor(matrix.color444(15, 15, 15));
-	matrix.printf("%s", "LED MATRIX!\n");
-
-	// print each letter with a rainbow color
-	matrix.setTextColor(matrix.color444(15, 0, 0));
-	matrix.writeChar('3');
-	matrix.setTextColor(matrix.color444(15, 4, 0));
-	matrix.writeChar('2');
-	matrix.setTextColor(matrix.color444(15, 15, 0));
-	matrix.writeChar('x');
-	matrix.setTextColor(matrix.color444(8, 15, 0));
-	matrix.writeChar('6');
-	matrix.setTextColor(matrix.color444(0, 15, 0));
-	matrix.writeChar('4');
-	matrix.setTextColor(34, 24);
-	matrix.setTextColor(matrix.color444(0, 15, 15));
-	matrix.writeChar('*');
-	matrix.setTextColor(matrix.color444(0, 8, 15));
-	matrix.writeChar('R');
-	matrix.setTextColor(matrix.color444(0, 0, 15));
-	matrix.writeChar('G');
-	matrix.setTextColor(matrix.color444(8, 0, 15));
-	matrix.writeChar('B');
-	matrix.setTextColor(matrix.color444(15, 0, 8));
-	matrix.writeChar('*');
-	matrix.writeChar('\n');
-
-}
-
-void loop() {
-
-
-}
-#endif
-
-// Input a value 0 to 24 to get a color value.
-// The colours are a transition r - g - b - back to r.
-uint16_t Wheel(P3RGB64x32MatrixPanel &matrix, byte WheelPos) {
-	if (WheelPos < 8) {
-		return matrix.color444(15 - WheelPos * 2, WheelPos * 2, 0);
-	} else if (WheelPos < 16) {
-		WheelPos -= 8;
-		return matrix.color444(0, 15 - WheelPos * 2, WheelPos * 2);
-	} else {
-		WheelPos -= 16;
-		return matrix.color444(0, WheelPos * 2, 7 - WheelPos * 2);
 	}
 }
 

@@ -133,10 +133,10 @@ int PS_PAD::send (const char *cmd, int len, char *dat) {
     int i;
 
     _cs = 0;
-    wait_us(10);
+//    wait_us(10);
     for (i = 0; i < len; i ++) {
         dat[i] = __rbit(_spi.write(__rbit(cmd[i] << 24)) << 24);
-        wait_us(10);
+//        wait_us(10);
     }
     _cs = 1;
     return i;
