@@ -3,6 +3,7 @@
 #include "P3RGB64x32MatrixPanel.h"
 #include "PS_PAD.h"
 #include "Weight.h"
+#include "ThingSpeak.h"
 #include "mbed.h"
 
 typedef struct {
@@ -54,7 +55,6 @@ Serial pc(USBTX, USBRX);
 int main() {
 	draw_main_task.start(&draw_main);
 	pspad_main_task.start(&pspad_main);
-
 	while (true);
 	return 0;
 }
@@ -95,6 +95,7 @@ void pspad_main(){
 
 void draw_main() {
 	pc.printf("draw main start\n");
+	ThingSpeak_init();
 	weight_init();
 	P3RGB64x32MatrixPanel matrix(D0, D3, D1, D2, D4, D5, D8, D6, P4_0, D14, D7,	D10, P4_1);
 	matrix.begin();
@@ -125,6 +126,10 @@ void draw_main() {
 
 				matrix.setTextColor(matrix.color444(0, 0, 15));
 				matrix.printf("%04x", mail->pspad.buttons);
+
+				if(mail->pspad.analog_ry>100){
+					ThingSpeak_ChannelUpdate(mail->pspad.analog_ry, mail->pspad.analog_ly);
+				}
 			}
 			mail_box.free(mail);
 		}

@@ -226,7 +226,17 @@ main.o: ../main.cpp \
  C:/Users/Akinori/e2_studio/workspace/lychee_mbed_style_WeightScale/mbed-os/platform/Callback.h \
  C:/Users/Akinori/e2_studio/workspace/lychee_mbed_style_WeightScale/mbed-os/platform/FunctionPointer.h \
  C:/Users/Akinori/e2_studio/workspace/lychee_mbed_style_WeightScale/mbed-os/platform/ScopedLock.h \
- ../PS_PAD.h ../Weight.h
+ ../PS_PAD.h ../Weight.h ../ThingSpeak.h \
+ C:/Users/Akinori/e2_studio/workspace/lychee_mbed_style_WeightScale/utilities/mbed-http/http_request.h \
+ C:/Users/Akinori/e2_studio/workspace/lychee_mbed_style_WeightScale/utilities/mbed-http/http_parser/http_parser.h \
+ C:/Users/Akinori/e2_studio/workspace/lychee_mbed_style_WeightScale/utilities/mbed-http/http_response.h \
+ C:/Users/Akinori/e2_studio/workspace/lychee_mbed_style_WeightScale/utilities/mbed-http/http_request_builder.h \
+ C:/Users/Akinori/e2_studio/workspace/lychee_mbed_style_WeightScale/utilities/mbed-http/http_parsed_url.h \
+ C:/Users/Akinori/e2_studio/workspace/lychee_mbed_style_WeightScale/utilities/mbed-http/http_request_parser.h \
+ C:/Users/Akinori/e2_studio/workspace/lychee_mbed_style_WeightScale/mbed-gr-libs/components/WIFI/esp32-driver/ESP32Interface.h \
+ C:/Users/Akinori/e2_studio/workspace/lychee_mbed_style_WeightScale/mbed-gr-libs/components/WIFI/esp32-driver/ESP32Stack.h \
+ C:/Users/Akinori/e2_studio/workspace/lychee_mbed_style_WeightScale/mbed-gr-libs/components/WIFI/esp32-driver/ESP32/ESP32.h \
+ C:/Users/Akinori/e2_studio/workspace/lychee_mbed_style_WeightScale/mbed-os/platform/ATCmdParser.h
 
 C:/Users/Akinori/e2_studio/workspace/lychee_mbed_style_WeightScale/mbed_config.h:
 
@@ -687,3 +697,25 @@ C:/Users/Akinori/e2_studio/workspace/lychee_mbed_style_WeightScale/mbed-os/platf
 ../PS_PAD.h:
 
 ../Weight.h:
+
+../ThingSpeak.h:
+
+C:/Users/Akinori/e2_studio/workspace/lychee_mbed_style_WeightScale/utilities/mbed-http/http_request.h:
+
+C:/Users/Akinori/e2_studio/workspace/lychee_mbed_style_WeightScale/utilities/mbed-http/http_parser/http_parser.h:
+
+C:/Users/Akinori/e2_studio/workspace/lychee_mbed_style_WeightScale/utilities/mbed-http/http_response.h:
+
+C:/Users/Akinori/e2_studio/workspace/lychee_mbed_style_WeightScale/utilities/mbed-http/http_request_builder.h:
+
+C:/Users/Akinori/e2_studio/workspace/lychee_mbed_style_WeightScale/utilities/mbed-http/http_parsed_url.h:
+
+C:/Users/Akinori/e2_studio/workspace/lychee_mbed_style_WeightScale/utilities/mbed-http/http_request_parser.h:
+
+C:/Users/Akinori/e2_studio/workspace/lychee_mbed_style_WeightScale/mbed-gr-libs/components/WIFI/esp32-driver/ESP32Interface.h:
+
+C:/Users/Akinori/e2_studio/workspace/lychee_mbed_style_WeightScale/mbed-gr-libs/components/WIFI/esp32-driver/ESP32Stack.h:
+
+C:/Users/Akinori/e2_studio/workspace/lychee_mbed_style_WeightScale/mbed-gr-libs/components/WIFI/esp32-driver/ESP32/ESP32.h:
+
+C:/Users/Akinori/e2_studio/workspace/lychee_mbed_style_WeightScale/mbed-os/platform/ATCmdParser.h:
